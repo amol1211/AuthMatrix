@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Spring Boot Auto Build & Run",
+      "command": ".\\mvnw.cmd spring-boot:run",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": ["$java"]
+    }
+  ]
+}

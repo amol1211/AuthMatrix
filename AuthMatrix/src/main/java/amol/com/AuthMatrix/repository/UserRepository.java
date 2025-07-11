@@ -8,5 +8,6 @@ import amol.com.AuthMatrix.entity.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     Optional<UserEntity> findByEmail(String email);
-
+    
+    Boolean existsByEmail(String email);
 }

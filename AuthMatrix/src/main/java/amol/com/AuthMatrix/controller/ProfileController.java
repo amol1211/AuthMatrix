@@ -3,6 +3,7 @@ package amol.com.AuthMatrix.controller;
 import amol.com.AuthMatrix.io.ProfileRequest;
 import amol.com.AuthMatrix.io.ProfileResponse;
 import amol.com.AuthMatrix.service.ProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class ProfileController {
     
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProfileResponse register(@RequestBody ProfileRequest request) {
+    public ProfileResponse register(@Valid @RequestBody ProfileRequest request) {
         ProfileResponse response = profileService.createProfile(request);
         //TODO: send welcome email
 

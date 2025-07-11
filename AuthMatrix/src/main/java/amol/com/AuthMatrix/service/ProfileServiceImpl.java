@@ -6,7 +6,10 @@ import amol.com.AuthMatrix.io.ProfileResponse;
 import amol.com.AuthMatrix.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 // Service implementation for profile creation logic
 
@@ -21,8 +24,14 @@ public class ProfileServiceImpl implements ProfileService{
 
         // Convert request to entity, save to DB, then convert to response
         UserEntity newProfile = convertToUserEntity(request);
-        newProfile = userRepository.save(newProfile);
-        return convertToProfileResponse(newProfile);
+
+        if(!userRepository.existsByEmail(newProfile.getEmail())) {
+            newProfile = userRepository.save(newProfile);
+            return convertToProfileResponse(newProfile);
+        }
+        
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        
     }
 
     // Converts UserEntity to ProfileResponse DTO
