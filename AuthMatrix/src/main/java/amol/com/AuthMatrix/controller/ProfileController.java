@@ -2,6 +2,7 @@ package amol.com.AuthMatrix.controller;
 
 import amol.com.AuthMatrix.io.ProfileRequest;
 import amol.com.AuthMatrix.io.ProfileResponse;
+import amol.com.AuthMatrix.service.EmailService;
 import amol.com.AuthMatrix.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final EmailService emailService;
     
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ProfileResponse register(@Valid @RequestBody ProfileRequest request) {
         ProfileResponse response = profileService.createProfile(request);
-        //TODO: send welcome email
+        emailService.sendWelcomeEmail(response.getEmail(), response.getName());
 
         return response;
     }
