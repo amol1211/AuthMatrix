@@ -7,6 +7,7 @@ import amol.com.AuthMatrix.io.ResetPasswordRequest;
 import amol.com.AuthMatrix.service.AppUserDetailsService;
 import amol.com.AuthMatrix.service.ProfileService;
 import amol.com.AuthMatrix.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
@@ -129,6 +130,22 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
+    }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+        .httpOnly(true)
+        .secure(false) // Set to true if using HTTPS
+        .path("/")
+        .maxAge(0) 
+        .sameSite("strict")
+        .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Logged out successfully");
     }
 
 }
