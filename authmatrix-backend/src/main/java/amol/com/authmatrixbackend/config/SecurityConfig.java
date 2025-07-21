@@ -2,10 +2,7 @@ package amol.com.authmatrixbackend.config;
 
 import org.springframework.web.filter.CorsFilter;
 
-// import amol.com.authmatrixbackend.filter.JwtRequestFilter;
-import amol.com.authmatrixbackend.filter.JwtRequestFilter; // Update this path to the correct package if needed, e.g.:
- // import amol.com.authmatrixbackend.filter.JwtRequestFilter;
- // import amol.com.AuthMatrix.filter.JwtRequestFilter;
+import amol.com.authmatrixbackend.filter.JwtRequestFilter; 
 import amol.com.authmatrixbackend.service.AppUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
