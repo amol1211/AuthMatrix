@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import header from "../assets/85e5492d-f360-4273-92b0-4ce2324807cb.jpg";
+import header from "../assets/lock-image.jpg";
 import { AppContext } from "../context/AppContext";
 
 const Header = () => {
   const { userData } = useContext(AppContext);
   return (
     <div
-      className="text-center d-flex flex-column align-items-center justify-content-center.py-5 px-3"
+      className="text-center d-flex flex-column align-items-center justify-content-center.py-5 px-3 mt-5"
       style={{ minHeight: "80vh" }}
     >
       <img src={header} alt="Header" width={120} className="mb-4" />
@@ -33,7 +33,6 @@ const Header = () => {
         Your one-stop solution for managing authentication and authorization
         with ease.
       </p>
-
       <button className="btn btn-outline-dark rounded-pill.px-4.py-2">
         Let's get started!
       </button>

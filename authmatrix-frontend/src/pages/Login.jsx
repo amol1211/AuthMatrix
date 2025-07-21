@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import axios from "axios";
-import logo from "../assets/85e5492d-f360-4273-92b0-4ce2324807cb.jpg";
+import logo from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
@@ -54,11 +54,11 @@ const Login = () => {
   };
   return (
     <div
-      className="position-relative min-vh-100 d-flex justify-content-center align-items-center"
+      className="position-relative min-vh-100 d-flex justify-content-center align-items-center "
       style={{
-        background: "linear-gradient(90deg, #6a5af9, #8268f9)",
+        background: "#ffffff",
         border: "none",
-      }}
+      }} //"linear-gradient(90deg, #6a5af9, #8268f9)"
     >
       <div
         style={{
@@ -80,12 +80,15 @@ const Login = () => {
             textDecoration: "none",
           }}
         >
-          <img src={logo} alt="logo" height={32} width={32} />
-          <span className="fw-bold fs-4 text-light">AuthMatrix</span>
+          <img src={logo} alt="logo" height={50} width={200} />
+          <span className="fw-bold fs-4 text-light"></span>
         </Link>
       </div>
 
-      <div className="card p-4" style={{ maxWidth: "400px", width: "100%" }}>
+      <div
+        className="card p-4 shadow border-0"
+        style={{ maxWidth: "400px", width: "100%" }}
+      >
         <h2 className="text-center mb-4">
           {isCreateAccount ? "Create Account" : "Login"}
         </h2>
@@ -118,6 +121,7 @@ const Login = () => {
               required
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              autoComplete="username"
             />
           </div>
           <div className="mb-3">
@@ -131,6 +135,7 @@ const Login = () => {
               placeholder="********"
               required
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
               value={password}
             />
           </div>

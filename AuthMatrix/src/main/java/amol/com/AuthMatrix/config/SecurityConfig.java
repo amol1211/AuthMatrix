@@ -62,9 +62,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
         config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type"));
+        //config.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type"));
+        config.setAllowedHeaders(java.util.List.of("*"));
         config.setAllowCredentials(true);
-
+        config.addExposedHeader("Set-Cookie"); //new addition
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo-home.png";
-import { useContext, useRef, useState } from "react";
+import logo from "../assets/logo.png";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -51,7 +51,7 @@ const EmailVerify = () => {
       const response = await axios.post(backendURL + "/verify-otp", { otp });
       if (response.status === 200) {
         toast.success("Email verified successfully!");
-        getUserData();
+        await getUserData();
         navigate("/");
       } else {
         toast.error("Invalid OTP, please try again.");
@@ -63,11 +63,15 @@ const EmailVerify = () => {
     }
   };
 
+  useEffect(() => {
+    isLoggedIn && userData && userData.isAccountVerified && navigate("/");
+  }, [isLoggedIn, userData]);
+
   return (
     <div
       className="email-verify-container d-flex align-items-center justify-content-center vh-100 position-relative"
       style={{
-        background: "linear-gradient(90deg, #6a5af9, #8268f9)",
+        background: "#ffffff",
         border: "none",
       }}
     >
@@ -75,7 +79,7 @@ const EmailVerify = () => {
         to="/"
         className="position-absolute top-0 start-0 p-4 d-flex align-items-center gap-2 text-decoration-none"
       >
-        <img src={logo} alt="Logo" height={32} width={32} />
+        <img src={logo} alt="Logo" height={50} width={200} />
         <span className="fs-4 fw-semibold text-light"></span>
       </Link>
 

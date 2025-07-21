@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>amol.com</groupId>
-	<artifactId>AuthMatrix</artifactId>
+	<artifactId>authmatrix-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>AuthMatrix</name>
+	<name>authmatrix-backend</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -83,11 +83,11 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
-		<dependency>
-    <groupId>me.paulschwarz</groupId>
+	<dependency>
+	<groupId>me.paulschwarz</groupId>
     <artifactId>spring-dotenv</artifactId>
     <version>3.0.0</version>
-</dependency>
+    </dependency>
 
 	</dependencies>
 

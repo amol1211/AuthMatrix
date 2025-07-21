@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo-home.png";
+import logo from "../assets/logo.png";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
@@ -56,7 +56,7 @@ const Menubar = () => {
   return (
     <nav className="navbar bg-white px-5 py-4 d-flex justify-content-between align-items-center">
       <div className="d-flex align-items-center gap-2">
-        <img src={logo} alt="Logo" width={200} height={200} />
+        <img src={logo} alt="Logo" width={200} height={50} />
         <span className="fw-bold fs-4 text-dark"></span>
       </div>
 

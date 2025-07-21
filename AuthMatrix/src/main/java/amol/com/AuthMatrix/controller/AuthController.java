@@ -53,7 +53,7 @@ public class AuthController {
                     .httpOnly(true)
                     .path("/")
                     .maxAge(Duration.ofDays(1)) 
-                    .sameSite("strict")
+                    .sameSite("lax") // or "Strict" based on your requirements
                     .build();
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                     .body(new AuthResponse(request.getEmail(), jwtToken));
@@ -140,7 +140,7 @@ public class AuthController {
         .secure(false) // Set to true if using HTTPS
         .path("/")
         .maxAge(0) 
-        .sameSite("strict")
+        .sameSite("lax") // or "Strict" based on your requirements
         .build();
 
         return ResponseEntity.ok()
