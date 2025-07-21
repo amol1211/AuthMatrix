@@ -1,7 +1,7 @@
-package amol.com.AuthMatrix.service;
+package amol.com.authmatrixbackend.service;
 
-import amol.com.AuthMatrix.repository.UserRepository;
-import amol.com.AuthMatrix.entity.UserEntity;
+import amol.com.authmatrixbackend.repository.UserRepository;
+import amol.com.authmatrixbackend.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;

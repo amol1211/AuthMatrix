@@ -1,12 +1,12 @@
-package amol.com.AuthMatrix.controller;
+package amol.com.authmatrixbackend.controller;
 
 
-import amol.com.AuthMatrix.io.AuthRequest;
-import amol.com.AuthMatrix.io.AuthResponse;
-import amol.com.AuthMatrix.io.ResetPasswordRequest;
-import amol.com.AuthMatrix.service.AppUserDetailsService;
-import amol.com.AuthMatrix.service.ProfileService;
-import amol.com.AuthMatrix.util.JwtUtil;
+import amol.com.authmatrixbackend.io.AuthRequest;
+import amol.com.authmatrixbackend.io.AuthResponse;
+import amol.com.authmatrixbackend.io.ResetPasswordRequest;
+import amol.com.authmatrixbackend.service.AppUserDetailsService;
+import amol.com.authmatrixbackend.service.ProfileService;
+import amol.com.authmatrixbackend.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 

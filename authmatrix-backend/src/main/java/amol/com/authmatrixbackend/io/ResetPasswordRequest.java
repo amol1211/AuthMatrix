@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.io;
+package amol.com.authmatrixbackend.io;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

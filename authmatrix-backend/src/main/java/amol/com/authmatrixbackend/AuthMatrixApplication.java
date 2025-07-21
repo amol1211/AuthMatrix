@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix;
+package amol.com.authmatrixbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

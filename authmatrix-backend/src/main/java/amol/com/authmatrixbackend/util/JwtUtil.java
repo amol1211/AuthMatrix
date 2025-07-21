@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.util;
+package amol.com.authmatrixbackend.util;
 
 import java.util.Date;
 import java.util.HashMap;

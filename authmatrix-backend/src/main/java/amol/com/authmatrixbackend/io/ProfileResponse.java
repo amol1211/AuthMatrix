@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.io;
+package amol.com.authmatrixbackend.io;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+public class ProfileResponse {
 
-public class AuthRequest {
+    private String userId;
+    private String name;
     private String email;
-    private String password;
-    
-
+    private Boolean isAccountVerified;
 }

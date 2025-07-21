@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.io;
+package amol.com.authmatrixbackend.io;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

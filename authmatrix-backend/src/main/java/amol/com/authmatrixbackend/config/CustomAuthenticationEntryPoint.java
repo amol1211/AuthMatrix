@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.config;
+package amol.com.authmatrixbackend.config;
 
 import java.io.IOException;
 

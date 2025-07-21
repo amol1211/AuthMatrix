@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.filter;
+package amol.com.authmatrixbackend.filter;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,8 +8,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import amol.com.AuthMatrix.service.AppUserDetailsService;
-import amol.com.AuthMatrix.util.JwtUtil;
+import amol.com.authmatrixbackend.service.AppUserDetailsService;
+import amol.com.authmatrixbackend.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

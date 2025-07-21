@@ -1,4 +1,4 @@
-package amol.com.AuthMatrix.entity;
+package amol.com.authmatrixbackend.entity;
 
 
 

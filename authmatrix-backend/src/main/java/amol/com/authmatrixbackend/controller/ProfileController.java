@@ -1,9 +1,9 @@
-package amol.com.AuthMatrix.controller;
+package amol.com.authmatrixbackend.controller;
 
-import amol.com.AuthMatrix.io.ProfileRequest;
-import amol.com.AuthMatrix.io.ProfileResponse;
-import amol.com.AuthMatrix.service.EmailService;
-import amol.com.AuthMatrix.service.ProfileService;
+import amol.com.authmatrixbackend.io.ProfileRequest;
+import amol.com.authmatrixbackend.io.ProfileResponse;
+import amol.com.authmatrixbackend.service.EmailService;
+import amol.com.authmatrixbackend.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

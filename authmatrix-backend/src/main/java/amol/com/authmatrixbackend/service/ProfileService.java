@@ -1,7 +1,7 @@
-package amol.com.AuthMatrix.service;
+package amol.com.authmatrixbackend.service;
 
-import amol.com.AuthMatrix.io.ProfileRequest;
-import amol.com.AuthMatrix.io.ProfileResponse;
+import amol.com.authmatrixbackend.io.ProfileRequest;
+import amol.com.authmatrixbackend.io.ProfileResponse;
 
 public interface ProfileService {
 

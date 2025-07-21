@@ -1,9 +1,9 @@
-package amol.com.AuthMatrix.repository;
+package amol.com.authmatrixbackend.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import amol.com.AuthMatrix.entity.UserEntity;
+import amol.com.authmatrixbackend.entity.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
