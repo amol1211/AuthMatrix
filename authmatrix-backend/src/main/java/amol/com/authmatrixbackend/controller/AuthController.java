@@ -37,12 +37,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-     // Health check endpoint
-    @GetMapping("/")
-    public ResponseEntity<String> root() {
-        return ResponseEntity.ok("Backend is running");
-    }
-
+    
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtil jwtUtil;
