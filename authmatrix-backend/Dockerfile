@@ -1,14 +1,19 @@
-# Use a lightweight OpenJDK image
-FROM openjdk:17-jdk-slim
+# Stage 1: Build the application
+FROM maven:3.9.6-eclipse-temurin-21 as builder
 
-# Set working directory
+WORKDIR /app
+COPY . .
+
+# Build the application
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:21-jdk-jammy
+
 WORKDIR /app
 
-# Copy built JAR from host to container
-COPY target/authmatrix-backend-0.0.1-SNAPSHOT.jar app.jar
+# Copy JAR from builder stage
+COPY --from=builder /app/target/*.jar app.jar
 
-# Expose port (optional - Render handles ports automatically)
 EXPOSE 8080
-
-# Run the JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
