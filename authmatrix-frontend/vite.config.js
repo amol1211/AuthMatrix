@@ -10,5 +10,5 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-  base: "./", // important for relative paths on static hosting
+  base: "/", // important for relative paths on static hosting
 });
