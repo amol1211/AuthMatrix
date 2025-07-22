@@ -52,7 +52,7 @@ web_modules/
 
 # Optional eslint cache
 .eslintcache
-
+ 
 # Optional stylelint cache
 .stylelintcache
 
@@ -178,3 +178,6 @@ buildNumber.properties
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+.vscode
+.elasticbeanstalk
