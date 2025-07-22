@@ -37,7 +37,10 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth ->auth
-                .requestMatchers("/","/login", "/register", "/send-reset-otp", "/reset-password", "/logout").permitAll()
+                .requestMatchers(
+    "/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/logo192.png", "/logo512.png",
+    "/login", "/register", "/send-reset-otp", "/reset-password", "/logout"
+).permitAll()
                 .anyRequest().authenticated())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -64,8 +67,9 @@ public class SecurityConfig {
         config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         //config.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type"));
         config.setAllowedHeaders(java.util.List.of(
-    "Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"
+    "Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Cookie"
 ));
+
         config.setAllowCredentials(true);
         config.addExposedHeader("Set-Cookie"); //new addition
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
