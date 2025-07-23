@@ -27,7 +27,7 @@ const Menubar = () => {
   const handleLogout = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.post(backendURL + "/logout");
+      const response = await axios.post(backendURL + "/api/logout");
       if (response.status === 200) {
         setIsLoggedIn(false);
         setUserData(false);
@@ -41,7 +41,7 @@ const Menubar = () => {
   const sendVerificationOtp = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const response = await axios.post(backendURL + "/send-otp");
+      const response = await axios.post(backendURL + "/api/send-otp");
       if (response.status === 200) {
         navigate("/email-verify");
         toast.success("OTP has been sent successfully!");
