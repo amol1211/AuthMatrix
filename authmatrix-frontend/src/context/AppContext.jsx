@@ -13,7 +13,7 @@ export const AppContextProvider = (props) => {
 
   const getUserData = async () => {
     try {
-      const response = await axios.get(backendURL + "/api/profile");
+      const response = await axios.get(backendURL + "/profile");
       if (response.status === 200) {
         setUserData(response.data);
       } else {
@@ -26,7 +26,7 @@ export const AppContextProvider = (props) => {
 
   const getAuthState = async () => {
     try {
-      const response = await axios.get(backendURL + "/api/is-authenticated");
+      const response = await axios.get(backendURL + "/is-authenticated");
       if (response.status === 200 && response.data === true) {
         setIsLoggedIn(true);
         await getUserData();

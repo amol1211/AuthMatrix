@@ -48,7 +48,7 @@ const EmailVerify = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(backendURL + "/api/verify-otp", {
+      const response = await axios.post(backendURL + "/verify-otp", {
         otp,
       });
       if (response.status === 200) {
