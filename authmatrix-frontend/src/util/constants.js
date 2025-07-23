@@ -1,3 +1,5 @@
 export const AppConstants = {
-  BACKEND_URL: import.meta.env.VITE_API_URL || "http://localhost:8080",
+  BACKEND_URL: (
+    import.meta.env.VITE_API_URL || "http://localhost:8080"
+  ).replace(/\/$/, ""),
 };
