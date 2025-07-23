@@ -35,8 +35,9 @@ export const AppContextProvider = (props) => {
         setUserData(null); //new add
       }
     } catch (error) {
+      console.error(error);
       // This catch block will be hit for network errors or non-2xx responses (like 401)
-      if (error.response && error.response.status === 401) {
+      /* if (error.response && error.response.status === 401) {
         // If the backend responds with 401, it means the user is not authenticated.
         // This is expected behavior when no valid session cookie is sent or found.
         setIsLoggedIn(false);
@@ -52,7 +53,7 @@ export const AppContextProvider = (props) => {
         );
         setIsLoggedIn(false);
         setUserData(null);
-      }
+      }*/
     }
   };
 
