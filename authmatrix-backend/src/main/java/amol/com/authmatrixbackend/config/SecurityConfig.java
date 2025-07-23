@@ -39,8 +39,17 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth ->auth
                 .requestMatchers(
     "/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/logo192.png", "/logo512.png",
-    "/login", "/register", "/send-reset-otp", "/reset-password", "/logout", "/**/*.png", "/assets/**"
+    "/assets/**", "/**/*.png",
+    "/api/register",
+    "/api/login",
+    "/api/send-otp",
+    "/api/verify-otp",
+    "/api/is-authenticated",
+    "/api/send-reset-otp",
+    "/api/reset-password",
+    "/api/logout"
 ).permitAll()
+
                 .anyRequest().authenticated())
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
