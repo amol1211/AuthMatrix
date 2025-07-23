@@ -40,14 +40,14 @@ public class SecurityConfig {
                 .requestMatchers(
     "/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/logo192.png", "/logo512.png",
     "/assets/**", "/**/*.png",
-    "/api/register",
-    "/api/login",
-    "/api/send-otp",
-    "/api/verify-otp",
-    "/api/is-authenticated",
-    "/api/send-reset-otp",
-    "/api/reset-password",
-    "/api/logout"
+    "/register",
+    "/login",
+    "/send-otp",
+    "/verify-otp",
+    "/is-authenticated",
+    "/send-reset-otp",
+    "/reset-password",
+    "/logout"
 ).permitAll()
 
                 .anyRequest().authenticated())
