@@ -11,7 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const { backendURL, setIsLoggedIn, getUserData } = useContext(AppContext);
+  const { backendURL, setIsLoggedIn, setUserData } = useContext(AppContext);
   const navigate = useNavigate();
 
   const onSubmitHandler = async (e) => {
@@ -40,7 +40,7 @@ const Login = () => {
 
         if (response.status === 200) {
           setIsLoggedIn(true);
-          await getUserData?.();
+          setUserData(response.data);
           navigate("/");
         } else {
           toast.error("Email or password is incorrect");

@@ -30,11 +30,13 @@ const Menubar = () => {
       const response = await axios.post(backendURL + "/logout");
       if (response.status === 200) {
         setIsLoggedIn(false);
-        setUserData(false);
-        navigate("/");
+        setUserData(null);
+        navigate("/login");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Failed to log out. Please try again."
+      );
     }
   };
 
@@ -49,7 +51,9 @@ const Menubar = () => {
         toast.error("Failed to send OTP. Please try again!");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message || "Error sending OTP. Please try again."
+      );
     }
   };
 
@@ -89,7 +93,7 @@ const Menubar = () => {
                 </div>
               )}
               <div
-                className="dropdown-tem py-1 px-2 text-danger"
+                className="dropdown-item py-1 px-2 text-danger"
                 style={{ cursor: "pointer" }}
                 onClick={handleLogout}
               >
