@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/index.html", "/favicon.ico", "/favicon.png",
                 "/assets/**", "/manifest.json", "/logo192.png", "/logo512.png",
                 "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.svg", "/**/*.woff2", "/**/*.ttf",
-                "/register", "/login", "/send-otp", "/verify-otp", "/is-authenticated",
+                "/register", "/login", "/verify-otp", "/is-authenticated",
                 "/send-reset-otp", "/reset-password", "/logout"
            ).permitAll()
             .anyRequest().authenticated())
