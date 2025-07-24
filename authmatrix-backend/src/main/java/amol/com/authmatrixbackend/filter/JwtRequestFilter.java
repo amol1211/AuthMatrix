@@ -44,7 +44,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/logo512.png",               // App logo for PWA
             "/register",                  // User registration API endpoint
             "/login",                     // User login API endpoint
-            "/send-otp",                  // Send OTP API endpoint
             "/verify-otp",                // Verify OTP API endpoint
             "/is-authenticated",          // Check authentication status (can be accessed without valid JWT)
             "/send-reset-otp",            // Send password reset OTP API endpoint
