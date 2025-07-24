@@ -11,7 +11,7 @@ export const AppContextProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
 
-  const getUserData = async () => {
+  /* const getUserData = async () => {
     try {
       const response = await axios.get(backendURL + "/profile");
       if (response.status === 200) {
@@ -22,14 +22,14 @@ export const AppContextProvider = (props) => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
+  }; */
 
   const getAuthState = async () => {
     try {
       const response = await axios.get(backendURL + "/is-authenticated");
       if (response.status === 200 && response.data === true) {
         setIsLoggedIn(true);
-        await getUserData();
+        //await getUserData();
       } else {
         setIsLoggedIn(false);
         setUserData(null); //new add
@@ -65,7 +65,7 @@ export const AppContextProvider = (props) => {
     setIsLoggedIn,
     userData,
     setUserData,
-    getUserData,
+    //getUserData,
   };
 
   return (
