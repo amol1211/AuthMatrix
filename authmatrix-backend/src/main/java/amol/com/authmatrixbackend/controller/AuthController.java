@@ -1,6 +1,5 @@
 package amol.com.authmatrixbackend.controller;
 
-
 import amol.com.authmatrixbackend.io.AuthRequest;
 import amol.com.authmatrixbackend.io.AuthResponse;
 import amol.com.authmatrixbackend.io.ResetPasswordRequest;
@@ -37,7 +36,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtil jwtUtil;
@@ -72,13 +70,16 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
         catch (Exception ex) {
+            // --- ADD THESE LINES FOR BETTER DEBUGGING ---
+            System.err.println("Unexpected error after successful authentication during login: " + ex.getMessage());
+            ex.printStackTrace(); // This is essential to see the full stack trace in Render logs
+            // --- END ADDITIONS ---
             Map<String, Object> error = new HashMap<>();
             error.put("error", true);
-            error.put("message", "Authentication failed");
+            error.put("message", "Authentication failed: " + ex.getMessage()); // Optionally include message in response
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
-
 
     private void authenticate(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
@@ -86,7 +87,7 @@ public class AuthController {
 
     @GetMapping("is-authenticated")
     public ResponseEntity<Boolean> isAuthenticated(@CurrentSecurityContext(expression = "authentication?.name") String email) {
-       
+        
         return ResponseEntity.ok(email != null);
 
     }
@@ -121,7 +122,7 @@ public class AuthController {
     
     @PostMapping("/verify-otp")
     public void verifyEmail(@RequestBody Map<String, Object> request, @CurrentSecurityContext(expression = "authentication?.name") String email) {
-       
+        
         if (request.get("otp").toString() ==null) { 
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "OTP is required");
         }
@@ -152,5 +153,3 @@ public class AuthController {
     }
 
 }
-
-
