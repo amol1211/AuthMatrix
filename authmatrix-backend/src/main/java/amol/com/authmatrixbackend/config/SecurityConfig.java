@@ -37,22 +37,15 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth ->auth
-                .requestMatchers(
-    "/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/logo192.png", "/logo512.png",
-    "/assets/**", "/**/*.png",
-    "/register",
-    "/login",
-    "/send-otp",
-    "/verify-otp",
-    "/is-authenticated",
-    "/send-reset-otp",
-    "/reset-password",
-    "/logout"
-).permitAll()
-
-                .anyRequest().authenticated())
+                .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/favicon.ico", "/favicon.png",
+                "/manifest.json", "/logo192.png", "/logo512.png",
+                "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.svg", "/**/*.woff2", "/**/*.ttf",
+                "/register", "/login", "/send-otp", "/verify-otp", "/is-authenticated",
+                "/send-reset-otp", "/reset-password", "/logout"
+            ).permitAll()
+            .anyRequest().authenticated())
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
