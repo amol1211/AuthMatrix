@@ -40,14 +40,18 @@ const Login = () => {
 
         if (response.status === 200) {
           setIsLoggedIn(true);
-          await getUserData();
+          await getUserData?.();
           navigate("/");
         } else {
           toast.error("Email or password is incorrect");
         }
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "An unexpected error occurred";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
