@@ -1,11 +1,15 @@
 package amol.com.authmatrixbackend.io;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AuthResponse {
     private String email;
-    private String token;
+    private String jwtToken;
+    private String name;
+    private boolean isAccountVerified;
 }

@@ -1,5 +1,6 @@
 package amol.com.authmatrixbackend.controller;
 
+import amol.com.authmatrixbackend.entity.UserEntity;
 import amol.com.authmatrixbackend.io.AuthRequest;
 import amol.com.authmatrixbackend.io.AuthResponse;
 import amol.com.authmatrixbackend.io.ResetPasswordRequest;
@@ -42,50 +43,50 @@ public class AuthController {
     private final ProfileService profileService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+public ResponseEntity<?> login(@RequestBody AuthRequest request) {
+    try {
+        authenticate(request.getEmail(), request.getPassword());
+        final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
+        final String jwtToken = jwtUtil.generateToken(userDetails);
 
-        try {
-            authenticate(request.getEmail(), request.getPassword());
-            final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
-            final String jwtToken = jwtUtil.generateToken(userDetails);
-            ResponseCookie cookie = ResponseCookie.from("jwt", jwtToken)
-                    .httpOnly(true)
-                    .path("/")
-                    .maxAge(Duration.ofDays(1)) 
-                    .sameSite("None") 
-                    .secure(true) 
-                    .build();
-            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .body(new AuthResponse(request.getEmail(), jwtToken));
-        } catch (BadCredentialsException ex) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", true);
-            error.put("message", "Email or Password is incorrect");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
-        catch (DisabledException ex) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", true);
-            error.put("message", "User account is disabled");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
-        catch (Exception ex) {
-            // --- ADD THESE LINES FOR BETTER DEBUGGING ---
-            System.err.println("Unexpected error after successful authentication during login: " + ex.getMessage());
-            ex.printStackTrace(); // This is essential to see the full stack trace in Render logs
-            // --- END ADDITIONS ---
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", true);
-            error.put("message", "Authentication failed: " + ex.getMessage()); // Optionally include message in response
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
+        UserEntity user = appUserDetailsService.getUserByEmail(request.getEmail());
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", jwtToken)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .sameSite("lax")
+                .secure(true)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new AuthResponse(user.getEmail(), jwtToken, user.getName(), user.isAccountVerified()));
+    } catch (BadCredentialsException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", true);
+        error.put("message", "Email or Password is incorrect");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    } catch (DisabledException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", true);
+        error.put("message", "User account is disabled");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", true);
+        error.put("message", "Authentication failed: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
+}
+
 
     private void authenticate(String email, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
     }
 
-    @GetMapping("is-authenticated")
+    @GetMapping("/is-authenticated")
     public ResponseEntity<Boolean> isAuthenticated(@CurrentSecurityContext(expression = "authentication?.name") String email) {
         
         return ResponseEntity.ok(email != null);
@@ -144,7 +145,7 @@ public class AuthController {
         .secure(true) // Set to true if using HTTPS
         .path("/")
         .maxAge(0) 
-        .sameSite("None") // or "Strict" based on your requirements
+        .sameSite("lax") 
         .build();
 
         return ResponseEntity.ok()

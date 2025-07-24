@@ -41,5 +41,10 @@ public class UserEntity {
     private Timestamp createdAt;
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    public boolean isAccountVerified() {
+    return this.isAccountVerified;
+}
+
     
 }

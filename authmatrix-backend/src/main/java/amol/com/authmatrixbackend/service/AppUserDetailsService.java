@@ -25,4 +25,9 @@ public class AppUserDetailsService implements UserDetailsService {
         return new User(existingUser.getEmail(), existingUser.getPassword(), new ArrayList<>());
     }
 
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    }
+
 }
