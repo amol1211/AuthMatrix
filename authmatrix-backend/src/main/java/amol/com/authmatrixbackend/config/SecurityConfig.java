@@ -37,12 +37,12 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth ->auth
-                .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/favicon.ico", "/favicon.png",
-                "/manifest.json", "/logo192.png", "/logo512.png",
+                .requestMatchers("/", "/index.html", "/favicon.ico", "/favicon.png",
+                "/assets/**", "/manifest.json", "/logo192.png", "/logo512.png",
                 "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.svg", "/**/*.woff2", "/**/*.ttf",
                 "/register", "/login", "/send-otp", "/verify-otp", "/is-authenticated",
                 "/send-reset-otp", "/reset-password", "/logout"
-            ).permitAll()
+           ).permitAll()
             .anyRequest().authenticated())
             .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
