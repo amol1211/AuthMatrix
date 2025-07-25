@@ -20,10 +20,15 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.security.core.Authentication;
+
+
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -112,7 +117,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/send-otp")
+/*     @PostMapping("/send-otp")
     public void sendVerifyOtp(@CurrentSecurityContext(expression = "authentication?.name") String email) {
         System.out.println("➡️ /send-otp called by user: " + email);
         try {
@@ -120,7 +125,25 @@ public class AuthController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    } */
+
+    @PostMapping("/send-otp")
+public void sendVerifyOtp() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String email = auth != null ? auth.getName() : null;
+    System.out.println("➡️ /send-otp called by user: " + email);
+
+    if (email == null) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
     }
+
+    try {
+        profileService.sendOtp(email);
+    } catch (Exception e) {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+}
+
 
     @PostMapping("/verify-otp")
     public void verifyEmail(@RequestBody Map<String, Object> request, @CurrentSecurityContext(expression = "authentication?.name") String email) {
