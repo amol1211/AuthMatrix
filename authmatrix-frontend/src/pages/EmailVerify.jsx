@@ -50,9 +50,7 @@ const EmailVerify = () => {
     try {
       const response = await axios.post(
         backendURL + "/verify-otp",
-        {
-          otp,
-        },
+        { otp },
         {
           withCredentials: true,
         }
