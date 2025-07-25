@@ -114,6 +114,7 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public void sendVerifyOtp(@CurrentSecurityContext(expression = "authentication?.name") String email) {
+        System.out.println("➡️ /send-otp called by user: " + email);
         try {
             profileService.sendOtp(email);
         } catch (Exception e) {

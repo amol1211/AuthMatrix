@@ -19,88 +19,66 @@ import java.io.IOException;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import io.jsonwebtoken.ExpiredJwtException; // Import for JWT exception handling
-import io.jsonwebtoken.SignatureException; // Import for JWT exception handling
-import io.jsonwebtoken.MalformedJwtException; // Import for JWT exception handling
-
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.MalformedJwtException;
 
 @Component
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
-    
+
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtil jwtUtil;
 
-    // This list MUST comprehensively match all permitAll() URLs from SecurityConfig.java
-    // These are paths that should NOT require a valid JWT.
     private static final List<String> PUBLIC_URL_PREFIXES = List.of(
-            "/",                          // Root path (e.g., your React app's base URL)
-            "/index.html",                // Main HTML file
-            "/favicon.ico",               // Standard favicon
-            "/favicon.png",               // Another favicon common in projects
-            "/assets/",                   // All static assets under the /assets/ directory
-            "/manifest.json",             // Progressive Web App manifest file
-            "/logo192.png",               // App logo for PWA
-            "/logo512.png",               // App logo for PWA
-            "/register",                  // User registration API endpoint
-            "/login",                     // User login API endpoint
-            "/verify-otp",                // Verify OTP API endpoint
-            "/is-authenticated",          // Check authentication status (can be accessed without valid JWT)
-            "/send-reset-otp",            // Send password reset OTP API endpoint
-            "/reset-password",            // Reset password API endpoint
-            "/logout"                     // Logout API endpoint (often handled without active JWT)
+            "/", "/index.html", "/favicon.ico", "/favicon.png", "/assets/",
+            "/manifest.json", "/logo192.png", "/logo512.png",
+            "/register", "/login", "/verify-otp", "/is-authenticated",
+            "/send-reset-otp", "/reset-password", "/logout"
     );
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String requestUri = request.getRequestURI(); // Get the full request URI
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
 
-        // Determine if the current request URI is a publicly accessible URL
+        String requestUri = request.getRequestURI();
         boolean isPublicUrl = false;
-        for (String publicPrefix : PUBLIC_URL_PREFIXES) {
-            // Check for exact match or if the URI starts with a public prefix
-            if (requestUri.equals(publicPrefix) || requestUri.startsWith(publicPrefix)) {
+
+        for (String prefix : PUBLIC_URL_PREFIXES) {
+            if (requestUri.equals(prefix) || requestUri.startsWith(prefix)) {
                 isPublicUrl = true;
-                break; // Found a match, no need to check further
+                break;
             }
         }
-        
-        // Additionally, check for common static file extensions
-        // This is important because a path like "/main.js" might not start with a configured prefix like "/assets/"
+
         if (!isPublicUrl && (
-            requestUri.endsWith(".js") ||
-            requestUri.endsWith(".css") ||
-            requestUri.endsWith(".png") ||
-            requestUri.endsWith(".svg") ||
-            requestUri.endsWith(".woff2") ||
-            requestUri.endsWith(".ttf")
+                requestUri.endsWith(".js") || requestUri.endsWith(".css") ||
+                requestUri.endsWith(".png") || requestUri.endsWith(".svg") ||
+                requestUri.endsWith(".woff2") || requestUri.endsWith(".ttf")
         )) {
             isPublicUrl = true;
         }
 
-        // If the request is for a public URL, bypass JWT validation entirely
         if (isPublicUrl) {
             filterChain.doFilter(request, response);
-            return; // IMPORTANT: Exit the method here, no further JWT processing needed
+            return;
         }
-
-        // --- Only proceed with JWT processing for non-public (potentially protected) URLs ---
 
         String jwt = null;
         String email = null;
 
-        // 1. Try to extract JWT from the "Authorization" header (e.g., "Bearer <token>")
         final String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // Extract the token part
+            jwt = authorizationHeader.substring(7);
         }
 
-        // 2. If JWT not found in header, try to extract it from cookies
         if (jwt == null) {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if ("jwt".equals(cookie.getName())) { // Look for a cookie named "jwt"
+                    if ("jwt".equals(cookie.getName())) {
                         jwt = cookie.getValue();
                         break;
                     }
@@ -108,40 +86,34 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        // 3. If a JWT was found, attempt to validate it and set the security context
         if (jwt != null) {
             try {
-                // Extract email from the JWT
-                email = jwtUtil.extractEmail(jwt); 
+                email = jwtUtil.extractEmail(jwt);
 
-                // If email is valid and no authentication is currently set in the context
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Load user details from your UserDetailsService
                     UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
-
-                    // Validate the token against the user details
                     if (jwtUtil.validateToken(jwt, userDetails)) {
-                        // If valid, create an authentication token and set it in the SecurityContextHolder
-                        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                        //Success log
+                        System.out.println("JWT validated for user: " + email);
                     }
                 }
+
             } catch (ExpiredJwtException e) {
-                // Log expired JWTs. The CustomAuthenticationEntryPoint will handle the 401 response.
-                System.err.println("JWT token expired: " + e.getMessage());
+                System.out.println("JWT expired: " + e.getMessage());
             } catch (SignatureException | MalformedJwtException | IllegalArgumentException e) {
-                // Log other JWT validation failures (e.g., invalid signature, malformed token)
-                System.err.println("Invalid JWT token: " + e.getMessage());
+                System.out.println("Invalid JWT: " + e.getMessage());
             } catch (Exception e) {
-                // Catch any other unexpected exceptions during JWT processing
-                System.err.println("Error processing JWT: " + e.getMessage());
-                e.printStackTrace(); // Print full stack trace for debugging unexpected errors
+                System.out.println("JWT processing failed: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        // Continue the filter chain to the next filter or the target servlet/controller
         filterChain.doFilter(request, response);
     }
 }

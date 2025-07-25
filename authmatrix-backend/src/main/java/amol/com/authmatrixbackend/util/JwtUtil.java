@@ -9,44 +9,38 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 
 
 @Component
 public class JwtUtil {
-    
+
     @Value("${jwt.secret.key}")
     private String SECRET_KEY;
 
     public String generateToken(UserDetails userDetails) {
-        // Logic to generate JWT token using the provided email
-       
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getUsername());
     }
 
-    // Defining the createToken method
     private String createToken(Map<String, Object> claims, String email) {
-        
         return Jwts.builder()
-        .setClaims(claims)
-        .setSubject(email)
-        .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 1000 + 60 * 60 * 10)) // Token valid for 10 hours
-        .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-        .compact();
-
-        
+            .setClaims(claims)
+            .setSubject(email)
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
+            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+            .compact();
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-        .setSigningKey(SECRET_KEY)
-        .parseClaimsJws(token)
-        .getBody();
-    }   
+        return Jwts.parserBuilder()
+            .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -69,5 +63,4 @@ public class JwtUtil {
         final String email = extractEmail(token);
         return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-
 }
