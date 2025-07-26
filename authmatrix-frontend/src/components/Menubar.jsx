@@ -34,6 +34,7 @@ const Menubar = () => {
         navigate("/login");
       }
     } catch (error) {
+      console.error("Logout error:", error);
       toast.error(
         error.response?.data?.message || "Failed to log out. Please try again."
       );
@@ -42,12 +43,25 @@ const Menubar = () => {
 
   const sendVerificationOtp = async () => {
     try {
+      console.log("Sending OTP request to:", backendURL + "/send-otp");
+      console.log("User data:", userData);
+
+      // Set axios defaults
       axios.defaults.withCredentials = true;
+
       const response = await axios.post(
         backendURL + "/send-otp",
-        {},
-        { withCredentials: true }
+        {}, // Empty body since we're getting email from JWT
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
+
+      console.log("OTP Response:", response);
+
       if (response.status === 200) {
         navigate("/email-verify");
         toast.success("OTP has been sent successfully!");
@@ -55,9 +69,30 @@ const Menubar = () => {
         toast.error("Failed to send OTP. Please try again!");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Error sending OTP. Please try again."
-      );
+      console.error("OTP Error Details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers,
+      });
+
+      if (error.response?.status === 401) {
+        toast.error("You need to log in again. Session expired.");
+        setIsLoggedIn(false);
+        setUserData(null);
+        navigate("/login");
+      } else if (error.response?.status === 403) {
+        toast.error("Access denied. Please log in again.");
+        setIsLoggedIn(false);
+        setUserData(null);
+        navigate("/login");
+      } else {
+        toast.error(
+          error.response?.data?.message ||
+            error.response?.data ||
+            "Error sending OTP. Please try again."
+        );
+      }
     }
   };
 
@@ -119,3 +154,4 @@ const Menubar = () => {
 };
 
 export default Menubar;
+// This code defines a Menubar component that displays a navigation bar with a logo, user profile options, and a login button. It handles user authentication, logout, and email verification functionalities using React hooks and Axios for API requests. The component also includes a dropdown menu for user actions and manages click events outside the dropdown to close it.

@@ -34,7 +34,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/", "/index.html", "/favicon.ico", "/favicon.png", "/assets/",
             "/manifest.json", "/logo192.png", "/logo512.png",
             "/register", "/login", "/verify-otp", "/is-authenticated",
-            "/send-reset-otp", "/reset-password", "/logout" //removed /send-otp
+            "/send-reset-otp", "/reset-password", "/logout"
+            // Note: /send-otp is NOT included here because it requires authentication
     );
 
     @Override
@@ -45,6 +46,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String requestUri = request.getRequestURI();
         boolean isPublicUrl = false;
+
+        // Debug logging
+        System.out.println("🔍 Processing request: " + requestUri);
 
         for (String prefix : PUBLIC_URL_PREFIXES) {
             if (requestUri.equals(prefix) || requestUri.startsWith(prefix)) {
@@ -60,6 +64,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         )) {
             isPublicUrl = true;
         }
+
+        System.out.println("🔒 Is public URL: " + isPublicUrl + " for " + requestUri);
 
         if (isPublicUrl) {
             filterChain.doFilter(request, response);
@@ -80,6 +86,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 for (Cookie cookie : cookies) {
                     if ("jwt".equals(cookie.getName())) {
                         jwt = cookie.getValue();
+                        System.out.println("🍪 Found JWT in cookie for: " + requestUri);
                         break;
                     }
                 }
@@ -89,6 +96,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (jwt != null) {
             try {
                 email = jwtUtil.extractEmail(jwt);
+                System.out.println("📧 Extracted email from JWT: " + email);
 
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
@@ -100,18 +108,24 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
 
                         //Success log
-                        System.out.println("JWT validated for user: " + email);
+                        System.out.println("JWT validated for user: " + email + " on " + requestUri);
+                    } else {
+                        System.out.println("JWT validation failed for: " + email);
                     }
+                } else if (email != null) {
+                    System.out.println("User already authenticated: " + email);
                 }
 
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT expired: " + e.getMessage());
+                System.out.println("⏰ JWT expired: " + e.getMessage());
             } catch (SignatureException | MalformedJwtException | IllegalArgumentException e) {
-                System.out.println("Invalid JWT: " + e.getMessage());
+                System.out.println("🚫 Invalid JWT: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("JWT processing failed: " + e.getMessage());
+                System.out.println("💥 JWT processing failed: " + e.getMessage());
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("🔍 No JWT found for protected route: " + requestUri);
         }
 
         filterChain.doFilter(request, response);
