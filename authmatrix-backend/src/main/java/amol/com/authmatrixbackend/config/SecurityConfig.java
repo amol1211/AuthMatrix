@@ -41,7 +41,7 @@ public class SecurityConfig {
                 "/assets/**", "/manifest.json", "/logo192.png", "/logo512.png",
                 "/**/*.js", "/**/*.css", "/**/*.png", "/**/*.svg", "/**/*.woff2", "/**/*.ttf",
                 "/register", "/login", "/verify-otp", "/is-authenticated",
-                "/send-reset-otp", "/reset-password", "/logout" //removed /send-otp
+                "/send-reset-otp", "/reset-password", "/logout", "/debug-auth" //Temporary endpoint for debugging
            ).permitAll()
             .anyRequest().authenticated())
             .sessionManagement(session -> session
