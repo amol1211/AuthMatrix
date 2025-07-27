@@ -5,11 +5,12 @@ import { toast } from "react-toastify";
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
-  axios.defaults.withCredentials = true; // Enable cookies for cross-origin requests
+  axios.defaults.withCredentials = true;
 
   const backendURL = AppConstants.BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [jwtToken, setJwtToken] = useState(localStorage.getItem("jwt"));
 
   /* const getUserData = async () => {
     try {
@@ -24,6 +25,20 @@ export const AppContextProvider = (props) => {
     }
   }; */
 
+  // Set up axios interceptor to include JWT in headers
+  axios.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem("jwt");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
   const getAuthState = async () => {
     try {
       const response = await axios.get(backendURL + "/is-authenticated");
@@ -33,6 +48,7 @@ export const AppContextProvider = (props) => {
       } else {
         setIsLoggedIn(false);
         setUserData(null); //new add
+        ocalStorage.removeItem("jwt");
       }
     } catch (error) {
       //console.error(error);
@@ -43,6 +59,7 @@ export const AppContextProvider = (props) => {
         setIsLoggedIn(false);
         setUserData(null); // Clear user data as they are not logged in
         // No need to toast an error for expected 401 on initial load
+        localStorage.removeItem("jwt");
       } else {
         // Handle other unexpected errors
         console.error("Error checking authentication state:", error);
@@ -65,6 +82,8 @@ export const AppContextProvider = (props) => {
     setIsLoggedIn,
     userData,
     setUserData,
+    jwtToken,
+    setJwtToken,
     //getUserData,
   };
 

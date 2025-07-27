@@ -39,8 +39,23 @@ const Login = () => {
         });
 
         if (response.status === 200) {
+          const data = response.data;
+
+          // Store JWT token
+          if (data.jwt) {
+            localStorage.setItem("jwt", data.jwt);
+          }
+
+          // Store user data (without JWT)
+          const userInfo = {
+            email: data.email,
+            name: data.name,
+            isAccountVerified: data.isAccountVerified,
+          };
+
+          setUserData(userInfo);
           setIsLoggedIn(true);
-          setUserData(response.data);
+          toast.success("Login successful!");
           navigate("/");
         } else {
           toast.error("Email or password is incorrect");
@@ -62,7 +77,7 @@ const Login = () => {
       style={{
         background: "#ffffff",
         border: "none",
-      }} //"linear-gradient(90deg, #6a5af9, #8268f9)"
+      }}
     >
       <div
         style={{

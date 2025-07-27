@@ -43,7 +43,7 @@ public class AuthController {
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtil jwtUtil;
     private final ProfileService profileService;
-    private final UserRepository userRepository; // ✅ Injected UserRepository
+    private final UserRepository userRepository; // Injected UserRepository
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
@@ -57,12 +57,13 @@ public class AuthController {
             Map<String, Object> userData = new HashMap<>();
             userData.put("email", user.getEmail());
             userData.put("name", user.getName());
-            userData.put("isAccountVerified", user.getIsAccountVerified()); // ✅ Make sure getter is correct
+            userData.put("isAccountVerified", user.getIsAccountVerified());
+            userData.put("jwt", jwtToken);
 
             ResponseCookie cookie = ResponseCookie.from("jwt", jwtToken)
                     .httpOnly(true)
                     .secure(true)
-                    .sameSite("lax") 
+                    .sameSite("None") 
                     .path("/")
                     .maxAge(Duration.ofDays(1))
                     .build();

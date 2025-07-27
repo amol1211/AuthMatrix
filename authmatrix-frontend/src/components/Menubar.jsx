@@ -42,7 +42,46 @@ const Menubar = () => {
   };
 
   const sendVerificationOtp = async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
     try {
+      console.log("Sending OTP request");
+
+      toast.info("Sending OTP...");
+
+      // axios will automatically include the JWT via the interceptor
+      const response = await axios.post(backendURL + "/send-otp", {});
+
+      console.log("OTP Response:", response);
+
+      if (response.status === 200) {
+        navigate("/email-verify");
+        toast.success("OTP has been sent successfully!");
+      } else {
+        toast.error("Failed to send OTP. Please try again!");
+      }
+    } catch (error) {
+      console.error("OTP Error:", error);
+
+      if (error.response?.status === 401) {
+        toast.error("Your session has expired. Please log in again.");
+        localStorage.removeItem("jwt");
+        setIsLoggedIn(false);
+        setUserData(null);
+        navigate("/login");
+      } else {
+        toast.error(
+          error.response?.data?.message ||
+            "Error sending OTP. Please try again."
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  /* try {
       console.log("Sending OTP request to:", backendURL + "/send-otp");
       console.log("User data:", userData);
 
@@ -94,7 +133,7 @@ const Menubar = () => {
         );
       }
     }
-  };
+  }; */
 
   return (
     <nav className="navbar bg-white px-5 py-4 d-flex justify-content-between align-items-center">
