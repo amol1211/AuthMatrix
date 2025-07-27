@@ -10,6 +10,7 @@ const Menubar = () => {
   const { userData, backendURL, setUserData, setIsLoggedIn } =
     useContext(AppContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {

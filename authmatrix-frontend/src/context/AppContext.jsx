@@ -48,7 +48,7 @@ export const AppContextProvider = (props) => {
       } else {
         setIsLoggedIn(false);
         setUserData(null); //new add
-        ocalStorage.removeItem("jwt");
+        localStorage.removeItem("jwt");
       }
     } catch (error) {
       //console.error(error);
