@@ -27,8 +27,13 @@ const Menubar = () => {
 
   const handleLogout = async () => {
     try {
-      axios.defaults.withCredentials = true;
-      const response = await axios.post(backendURL + "/logout");
+      const response = await axios.post(
+        backendURL + "/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       if (response.status === 200) {
         setIsLoggedIn(false);
         setUserData(null);
@@ -44,18 +49,16 @@ const Menubar = () => {
 
   const sendVerificationOtp = async () => {
     if (isLoading) return;
-
     setIsLoading(true);
 
     try {
-      console.log("Sending OTP request");
-
       toast.info("Sending OTP...");
 
-      // axios will automatically include the JWT via the interceptor
-      const response = await axios.post(backendURL + "/send-otp", {});
-
-      console.log("OTP Response:", response);
+      const response = await axios.post(
+        backendURL + "/send-otp",
+        {},
+        { withCredentials: true } // ✅ no token needed, cookie is sent
+      );
 
       if (response.status === 200) {
         navigate("/email-verify");
@@ -65,10 +68,8 @@ const Menubar = () => {
       }
     } catch (error) {
       console.error("OTP Error:", error);
-
       if (error.response?.status === 401) {
-        toast.error("Your session has expired. Please log in again.");
-        localStorage.removeItem("jwt");
+        toast.error("Session expired. Please log in again.");
         setIsLoggedIn(false);
         setUserData(null);
         navigate("/login");
