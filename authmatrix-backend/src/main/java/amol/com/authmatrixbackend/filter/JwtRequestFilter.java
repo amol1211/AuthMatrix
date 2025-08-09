@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -34,9 +35,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/", "/index.html", "/favicon.ico", "/favicon.png", "/assets/",
             "/manifest.json", "/logo192.png", "/logo512.png",
             "/register", "/login", "/verify-otp", "/is-authenticated",
-            "/send-reset-otp", "/reset-password", "/logout"
-            // Note: /send-otp is NOT included here because it requires authentication
+            "/send-reset-otp", "/reset-password", "/logout", "/debug-auth"
     );
+
+    private String extractJwtFromRequest(HttpServletRequest request) {
+        // 1) Check Authorization header
+        final String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            logger.info("Found Authorization header with Bearer token");
+            return authorizationHeader.substring(7);
+        }
+
+        // 2) Check cookies
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwt".equals(cookie.getName())) {
+                    logger.info("Found jwt cookie");
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        // 3) No token found
+        return null;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -45,87 +68,53 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestUri = request.getRequestURI();
-        boolean isPublicUrl = false;
 
-        // Debug logging
-        System.out.println("🔍 Processing request: " + requestUri);
+        // Mark as public if it matches known prefixes or is a static asset
+        boolean isPublic = PUBLIC_URL_PREFIXES.stream()
+                .anyMatch(prefix -> requestUri.equals(prefix) || requestUri.startsWith(prefix))
+                || requestUri.matches(".*\\.(js|css|png|svg|woff2|ttf)$");
 
-        for (String prefix : PUBLIC_URL_PREFIXES) {
-            if (requestUri.equals(prefix) || requestUri.startsWith(prefix)) {
-                isPublicUrl = true;
-                break;
-            }
-        }
+        logger.debug("Processing request URI: " + requestUri + " | isPublic: " + isPublic);
 
-        if (!isPublicUrl && (
-                requestUri.endsWith(".js") || requestUri.endsWith(".css") ||
-                requestUri.endsWith(".png") || requestUri.endsWith(".svg") ||
-                requestUri.endsWith(".woff2") || requestUri.endsWith(".ttf")
-        )) {
-            isPublicUrl = true;
-        }
-
-        System.out.println("🔒 Is public URL: " + isPublicUrl + " for " + requestUri);
-
-        if (isPublicUrl) {
+        if (isPublic) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwt = null;
-        String email = null;
-
-        final String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-        }
-
+        String jwt = extractJwtFromRequest(request);
         if (jwt == null) {
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("jwt".equals(cookie.getName())) {
-                        jwt = cookie.getValue();
-                        System.out.println("🍪 Found JWT in cookie for: " + requestUri);
-                        break;
-                    }
-                }
-            }
+            logger.warn("No JWT found for protected route: " + requestUri);
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if (jwt != null) {
-            try {
-                email = jwtUtil.extractEmail(jwt);
-                System.out.println("📧 Extracted email from JWT: " + email);
+        try {
+            String email = jwtUtil.extractEmail(jwt);
+            logger.debug("Email extracted from token: " + email);
 
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
-                    if (jwtUtil.validateToken(jwt, userDetails)) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities()
-                        );
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
 
-                        //Success log
-                        System.out.println("JWT validated for user: " + email + " on " + requestUri);
-                    } else {
-                        System.out.println("JWT validation failed for: " + email);
-                    }
-                } else if (email != null) {
-                    System.out.println("User already authenticated: " + email);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.info("JWT validated and SecurityContext set for user: " + email);
+                } else {
+                    logger.warn("JWT validation failed for user: " + email);
                 }
-
-            } catch (ExpiredJwtException e) {
-                System.out.println("⏰ JWT expired: " + e.getMessage());
-            } catch (SignatureException | MalformedJwtException | IllegalArgumentException e) {
-                System.out.println("🚫 Invalid JWT: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("💥 JWT processing failed: " + e.getMessage());
-                e.printStackTrace();
+            } else {
+                logger.debug("Either email is null or user already authenticated.");
             }
-        } else {
-            System.out.println("🔍 No JWT found for protected route: " + requestUri);
+        } catch (ExpiredJwtException eje) {
+            logger.warn("Token expired: " + eje.getMessage(), eje);
+        } catch (SignatureException sie) {
+            logger.warn("Invalid JWT signature: " + sie.getMessage(), sie);
+        } catch (MalformedJwtException mje) {
+            logger.warn("Malformed JWT: " + mje.getMessage(), mje);
+        } catch (Exception ex) {
+            logger.error("Unexpected JWT processing error for " + requestUri + ": " + ex.getMessage(), ex);
         }
 
         filterChain.doFilter(request, response);

@@ -63,7 +63,7 @@ public class AuthController {
             ResponseCookie cookie = ResponseCookie.from("jwt", jwtToken)
                     .httpOnly(true)
                     .secure(true)
-                    .sameSite("None") 
+                    .sameSite("Lax") 
                     .path("/")
                     .maxAge(Duration.ofDays(1))
                     .build();
@@ -119,35 +119,7 @@ public class AuthController {
         }
     }
 
-/*     @PostMapping("/send-otp")
-    public void sendVerifyOtp(@CurrentSecurityContext(expression = "authentication?.name") String email) {
-        System.out.println("➡️ /send-otp called by user: " + email);
-        try {
-            profileService.sendOtp(email);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
-    } */
 
-    /* @PostMapping("/send-otp")
-public void sendVerifyOtp() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String email = auth != null ? auth.getName() : null;
-    System.out.println("➡️ /send-otp called by user: " + email);
-
-    if (email == null) {
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-    }
-
-    try {
-        profileService.sendOtp(email);
-    } catch (Exception e) {
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    }
-} */
-
-
-   // Replace your existing /send-otp method with this:
 @PostMapping("/send-otp")
 public ResponseEntity<?> sendVerifyOtp(HttpServletRequest request) {
     // Debug logging
@@ -262,7 +234,7 @@ public ResponseEntity<?> debugAuth(HttpServletRequest request) {
         ResponseCookie cookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
                 .secure(true)
-                .sameSite("lax") 
+                .sameSite("Lax") 
                 .path("/")
                 .maxAge(0)
                 .build();

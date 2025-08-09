@@ -5,6 +5,8 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+axios.defaults.withCredentials = true;
+
 const Menubar = () => {
   const navigate = useNavigate();
   const { userData, backendURL, setUserData, setIsLoggedIn } =
@@ -27,16 +29,12 @@ const Menubar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        backendURL + "/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(backendURL + "/logout", {});
       if (response.status === 200) {
+        toast.success("You have been logged out");
         setIsLoggedIn(false);
         setUserData(null);
+        setDropdownOpen(false);
         navigate("/login");
       }
     } catch (error) {
@@ -44,6 +42,9 @@ const Menubar = () => {
       toast.error(
         error.response?.data?.message || "Failed to log out. Please try again."
       );
+    } finally {
+      setDropdownOpen(false);
+      setIsLoading(false);
     }
   };
 
@@ -54,15 +55,12 @@ const Menubar = () => {
     try {
       toast.info("Sending OTP...");
 
-      const response = await axios.post(
-        backendURL + "/send-otp",
-        {},
-        { withCredentials: true } // ✅ no token needed, cookie is sent
-      );
+      const response = await axios.post(backendURL + "/send-otp", {});
 
       if (response.status === 200) {
-        navigate("/email-verify");
         toast.success("OTP has been sent successfully!");
+        setDropdownOpen(false);
+        navigate("/email-verify");
       } else {
         toast.error("Failed to send OTP. Please try again!");
       }
@@ -80,62 +78,10 @@ const Menubar = () => {
         );
       }
     } finally {
+      setDropdownOpen(false);
       setIsLoading(false);
     }
   };
-  /* try {
-      console.log("Sending OTP request to:", backendURL + "/send-otp");
-      console.log("User data:", userData);
-
-      // Set axios defaults
-      axios.defaults.withCredentials = true;
-
-      const response = await axios.post(
-        backendURL + "/send-otp",
-        {}, // Empty body since we're getting email from JWT
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("OTP Response:", response);
-
-      if (response.status === 200) {
-        navigate("/email-verify");
-        toast.success("OTP has been sent successfully!");
-      } else {
-        toast.error("Failed to send OTP. Please try again!");
-      }
-    } catch (error) {
-      console.error("OTP Error Details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        headers: error.response?.headers,
-      });
-
-      if (error.response?.status === 401) {
-        toast.error("You need to log in again. Session expired.");
-        setIsLoggedIn(false);
-        setUserData(null);
-        navigate("/login");
-      } else if (error.response?.status === 403) {
-        toast.error("Access denied. Please log in again.");
-        setIsLoggedIn(false);
-        setUserData(null);
-        navigate("/login");
-      } else {
-        toast.error(
-          error.response?.data?.message ||
-            error.response?.data ||
-            "Error sending OTP. Please try again."
-        );
-      }
-    }
-  }; */
 
   return (
     <nav className="navbar bg-white px-5 py-4 d-flex justify-content-between align-items-center">
@@ -166,8 +112,11 @@ const Menubar = () => {
               {!userData.isAccountVerified && (
                 <div
                   className="dropdown-item py-1 px-2"
-                  style={{ cursor: "pointer" }}
-                  onClick={sendVerificationOtp}
+                  style={{
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: isLoading ? 0.5 : 1,
+                  }}
+                  onClick={!isLoading ? sendVerificationOtp : undefined}
                 >
                   verify your email
                 </div>
