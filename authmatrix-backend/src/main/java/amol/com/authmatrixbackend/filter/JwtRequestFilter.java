@@ -35,8 +35,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             "/", "/index.html", "/favicon.ico", "/favicon.png", "/assets/",
             "/manifest.json", "/logo192.png", "/logo512.png",
             "/register", "/login", "/verify-otp", "/is-authenticated",
-            "/send-reset-otp", "/reset-password", "/logout", "/debug-auth",
-            "/send-otp"  // <-- Added here
+            "/send-reset-otp", "/reset-password", "/logout", "/debug-auth"
+           
     );
 
     private String extractJwtFromRequest(HttpServletRequest request) {
