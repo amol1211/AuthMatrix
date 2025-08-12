@@ -75,7 +75,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(java.util.List.of(
             "https://authmatrix-1uni.onrender.com",
-            "http://localhost:5173"
+            "http://localhost:5173",
+            "http://localhost:5176",
+            "http://localhost:8080"
         ));
         config.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(java.util.List.of(
