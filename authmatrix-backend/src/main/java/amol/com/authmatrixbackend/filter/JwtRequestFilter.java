@@ -78,7 +78,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         logger.debug("Processing request URI: " + requestUri + " | isPublic: " + isPublic);
 
         if (isPublic) {
-            // For public endpoints, just continue filter chain without auth check
+            // For public endpoints, just continue filter chain without auth check.
             filterChain.doFilter(request, response);
             return;
         }
